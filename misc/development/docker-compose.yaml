@@ -1,0 +1,32 @@
+version: '3.1'
+
+services:
+
+  db:
+    container_name: dev_db
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: data_relations@
+      POSTGRES_USER: data_relations
+      POSTGRES_DB: data_relations
+    ports:
+      - "5432:5432"
+
+  queue:
+    container_name: dev_queue
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    image: rabbitmq
+
+  mongo:
+    container_name: dev_mongo
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: data_relations
+      MONGO_INITDB_ROOT_PASSWORD: data_relations@
+      MONGO_INITDB_DATABASE: data_relations
+    ports:
+      - "27017:27017"
