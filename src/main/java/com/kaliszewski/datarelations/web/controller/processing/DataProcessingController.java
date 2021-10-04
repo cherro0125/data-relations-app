@@ -28,6 +28,8 @@ public class DataProcessingController {
     public ResponseEntity<DataProcessingTask> init() {
         Path path = fileService.downloadFile();
         log.info(path);
+        Path unzipPath = fileService.unzipFile(path);
+        log.info(unzipPath);
         return new ResponseEntity<>(new DataProcessingTask(1L, ProgressStatus.DATA_PROCESSING_PENDING, OffsetDateTime.now(),OffsetDateTime.now().plusMinutes(50L),""), HttpStatus.OK);
     }
 }

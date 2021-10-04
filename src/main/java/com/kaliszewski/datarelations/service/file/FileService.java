@@ -4,5 +4,5 @@ import java.nio.file.Path;
 
 public interface FileService {
     Path downloadFile();
-    Path unzipFile();
+    Path unzipFile(Path source);
 }
