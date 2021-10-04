@@ -12,14 +12,6 @@ services:
       POSTGRES_DB: data_relations
     ports:
       - "5432:5432"
-
-  queue:
-    container_name: dev_queue
-    ports:
-      - "15672:15672"
-      - "5672:5672"
-    image: rabbitmq
-
   mongo:
     container_name: dev_mongo
     image: mongo

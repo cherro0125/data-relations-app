@@ -35,10 +35,6 @@ spring:
         url: jdbc:postgresql://localhost:5432/data_relations
         username: data_relations
         password: data_relations@
-    rabbitmq:
-        addresses: localhost:5672
-        password: guest
-        username: guest
 
 ---
 spring:
@@ -57,7 +53,3 @@ spring:
         url: jdbc:postgresql://${POSTGRE_CONTAINER_NAME}:5432/${POSTGRE_DB_NAME}
         username: ${POSTGRE_USER}
         password: ${POSTGRE_PASSWORD}
-    rabbitmq:
-        addresses: ${RABBIT_CONTAINER_NAME}:5672
-        password: guest
-        username: guest
