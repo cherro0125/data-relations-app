@@ -12,4 +12,5 @@ public class AppProperties {
     private String zipFileUrl;
     private String tmpDir;
     private Long timeoutInMinutes;
+    private Integer executorThreads;
 }

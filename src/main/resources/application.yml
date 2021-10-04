@@ -2,6 +2,7 @@ app:
     zipFileUrl: 'https://leidata.gleif.org/api/v1/concatenated-files/rr/20210930/zip'
     tmpDir: ${java.io.tmpdir}
     timeoutInMinutes: 1
+    executorThreads: 2
 
 spring:
     profiles:
@@ -9,9 +10,6 @@ spring:
     jpa:
         hibernate:
             ddl-auto: validate
-server:
-    servlet:
-        context-path: /api
 springdoc:
     api-docs:
         path: /doc

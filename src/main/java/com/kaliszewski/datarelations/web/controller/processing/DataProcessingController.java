@@ -1,35 +1,41 @@
 package com.kaliszewski.datarelations.web.controller.processing;
 
 import com.kaliszewski.datarelations.data.model.processing.DataProcessingTask;
-import com.kaliszewski.datarelations.data.model.processing.ProgressStatus;
-import com.kaliszewski.datarelations.service.file.FileService;
+import com.kaliszewski.datarelations.data.response.DataProcessingTaskInitResponse;
+import com.kaliszewski.datarelations.data.response.DataProcessingTaskResponse;
+import com.kaliszewski.datarelations.service.processing.ProcessingService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.Path;
-import java.time.OffsetDateTime;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/processing")
+@RequestMapping("/api/processing")
 @Log4j2
 @AllArgsConstructor
 public class DataProcessingController {
 
-    private FileService fileService;
+    private ProcessingService processingService;
 
     @Tag(name = "Processing: init", description = "Init data processing with new file download.")
     @PostMapping(path = "/init")
-    public ResponseEntity<DataProcessingTask> init() {
-        Path path = fileService.downloadFile();
-        log.info(path);
-        Path unzipPath = fileService.unzipFile(path);
-        log.info(unzipPath);
-        return new ResponseEntity<>(new DataProcessingTask(1L, ProgressStatus.DATA_PROCESSING_PENDING, OffsetDateTime.now(),OffsetDateTime.now().plusMinutes(50L),""), HttpStatus.OK);
+    public ResponseEntity<DataProcessingTaskInitResponse> init() {
+        Long taskId = processingService.initProcessing();
+        DataProcessingTask task = processingService.getTaskById(taskId);
+        return ResponseEntity.of(Optional.of(new DataProcessingTaskInitResponse(taskId, task.getProgressStatus(),
+                "Please use /api/processing/status/{taskId} for check details")));
     }
+
+
+    @Tag(name = "Processing: status", description = "Get status for task with provided ID")
+    @GetMapping("/status/{taskId}")
+    public ResponseEntity<DataProcessingTaskResponse> getTask(@PathVariable("taskId") Long taskId) {
+        DataProcessingTask task = processingService.getTaskById(taskId);
+        return ResponseEntity.of(Optional.of(new DataProcessingTaskResponse(task.getId(),task.getProgressStatus())));
+    }
+
+
 }
