@@ -4,13 +4,9 @@ package com.kaliszewski.datarelations.data.model.repository;
 import com.kaliszewski.datarelations.data.model.processing.DataProcessingTask;
 import com.kaliszewski.datarelations.data.model.processing.ProgressStatus;
 import com.kaliszewski.datarelations.data.repository.DataProcessingTaskRepository;
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -18,10 +14,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@DataJpaTest
-@AutoConfigureEmbeddedDatabase
-@AutoConfigureTestDatabase
-@RunWith(SpringRunner.class)
+@SpringBootTest
 public class DataProcessingTaskRepositoryTests {
 
     @Autowired

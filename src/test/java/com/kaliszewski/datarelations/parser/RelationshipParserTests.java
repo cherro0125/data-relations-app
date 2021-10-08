@@ -2,37 +2,34 @@ package com.kaliszewski.datarelations.parser;
 
 
 import com.kaliszewski.datarelations.data.model.reationship.Relationship;
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.anyOf;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
 
-@RunWith(JUnit4.class)
+
+@SpringBootTest
 public class RelationshipParserTests {
 
 
+    @Autowired
     private RelationshipParser relationshipParser;
     private File xmlFile;
 
-    @Before
+    @BeforeEach
     public void setup() throws FileNotFoundException {
-        relationshipParser = new RelationshipParserImpl();
         xmlFile = ResourceUtils.getFile(
                 "classpath:test.xml");
     }
