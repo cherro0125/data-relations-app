@@ -23,11 +23,12 @@ spring:
             on-profile: dev
     data:
         mongodb:
-            database: data_relations
+            database: test
             host: localhost
-            password: data_relations@
             port: 27017
-            username: data_relations
+            username: test
+            password: test
+            authentication-database: admin
     datasource:
         driver-class-name: org.postgresql.Driver
         url: jdbc:postgresql://localhost:5432/data_relations

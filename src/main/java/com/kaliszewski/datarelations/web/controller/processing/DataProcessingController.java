@@ -37,5 +37,11 @@ public class DataProcessingController {
         return ResponseEntity.of(Optional.of(new DataProcessingTaskResponse(task.getId(),task.getProgressStatus())));
     }
 
+    @GetMapping("/test")
+    public String test() {
+        processingService.test();
+        return "OK";
+    }
+
 
 }

@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS processing_tasks(
+  id BIGINT GENERATED ALWAYS AS IDENTITY,
+  progress_status VARCHAR,
+  start_time TIMESTAMP WITH TIME ZONE,
+  end_time TIMESTAMP WITH TIME ZONE,
+  tmp_file_path VARCHAR
+);

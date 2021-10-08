@@ -2,8 +2,10 @@ package com.kaliszewski.datarelations.service.processing.impl;
 
 import com.kaliszewski.datarelations.data.model.processing.DataProcessingTask;
 import com.kaliszewski.datarelations.data.model.processing.ProgressStatus;
+import com.kaliszewski.datarelations.data.model.reationship.Node;
 import com.kaliszewski.datarelations.data.model.reationship.Relationship;
 import com.kaliszewski.datarelations.data.repository.DataProcessingTaskRepository;
+import com.kaliszewski.datarelations.data.repository.RelationshipRepository;
 import com.kaliszewski.datarelations.parser.RelationshipParser;
 import com.kaliszewski.datarelations.service.file.FileService;
 import com.kaliszewski.datarelations.service.processing.ProcessingService;
@@ -17,6 +19,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -30,6 +33,7 @@ public class ProcessingServiceImpl implements ProcessingService {
     private ExecutorService executorService;
     private FileService fileService;
     private RelationshipParser relationshipParser;
+    private RelationshipRepository relationshipRepository;
 
     private void updateProcessingTaskStatus(DataProcessingTask task, ProgressStatus status) {
         task.setProgressStatus(status);
@@ -57,6 +61,18 @@ public class ProcessingServiceImpl implements ProcessingService {
     @Override
     public DataProcessingTask getTaskById(Long taskId) {
         return dataProcessingTaskRepository.getById(taskId);
+    }
+
+    @Override
+    public void test() {
+        Relationship relationship = new Relationship();
+        relationship.setType("TEST");
+        Node startNode = new Node();
+        startNode.setId("DWDDW");
+        startNode.setType("EEE");
+        relationship.setStartNode(startNode);
+        Relationship save = relationshipRepository.save(relationship);
+        log.info(save);
     }
 
 
@@ -97,6 +113,13 @@ public class ProcessingServiceImpl implements ProcessingService {
         log.info("Execution time: {} ns",estimatedTime);
         log.info("Execution time: {} s",elapsedTimeInSecond);
         log.info("Size {}", relationships.size());
+        relationships.forEach(el -> el.setFromTaskId(task.getId()));
+        long startTimeForSave = System.nanoTime();
+        relationshipRepository.saveAll(relationships);
+        long estimatedTimeForSave = System.nanoTime() - startTimeForSave;
+        double elapsedTimeForSaveInSecond = (double) estimatedTimeForSave / 1_000_000_000;
+        log.info("Save time: {} ns",estimatedTimeForSave);
+        log.info("Save time: {} s",elapsedTimeForSaveInSecond);
         log.info("End file processing actions.");
         return task;
     }

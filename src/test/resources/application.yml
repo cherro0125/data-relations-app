@@ -1,0 +1,29 @@
+app:
+    zipFileUrl: 'https://leidata.gleif.org/api/v1/concatenated-files/rr/20210930/zip'
+    tmpDir: ${java.io.tmpdir}
+    timeoutInMinutes: 1
+    executorThreads: 2
+
+spring:
+    profiles:
+        active: dev
+    jpa:
+        hibernate:
+            ddl-auto: validate
+springdoc:
+    api-docs:
+        path: /doc
+    swagger-ui:
+        path: /doc/ui
+
+---
+spring:
+    datasource:
+        url: jdbc:h2:mem:dev
+        driver-class-name: org.h2.Driver
+        username: sa
+        jpa:
+            database-platform: org.hibernate.dialect.H2Dialect
+        config:
+            activate:
+                on-profile: development

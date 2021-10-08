@@ -6,4 +6,6 @@ public interface ProcessingService {
     Long initProcessing();
 
     DataProcessingTask getTaskById(Long taskId);
+
+    void test();
 }
