@@ -36,7 +36,7 @@ public class RelationshipParserTests {
 
     @Test
     @DisplayName("Check is parser correct parse XML file to Relationship object list")
-    public void test() {
+    public void parserTest() {
         List<Relationship> relationships = relationshipParser.parse(xmlFile);
         assertThat(relationships).isNotNull();
         assertThat(relationships.size()).isEqualTo(3);

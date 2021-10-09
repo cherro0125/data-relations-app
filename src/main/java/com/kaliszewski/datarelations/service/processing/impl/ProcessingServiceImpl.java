@@ -13,16 +13,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import javax.persistence.EntityNotFoundException;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
-import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 @Service
 @Log4j2
@@ -60,7 +55,7 @@ public class ProcessingServiceImpl implements ProcessingService {
 
     @Override
     public DataProcessingTask getTaskById(Long taskId) {
-        return dataProcessingTaskRepository.getById(taskId);
+        return dataProcessingTaskRepository.findById(taskId).orElseThrow(EntityNotFoundException::new);
     }
 
     @Override

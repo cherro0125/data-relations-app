@@ -4,6 +4,7 @@ import com.kaliszewski.datarelations.data.model.reationship.Node;
 import com.kaliszewski.datarelations.data.model.reationship.Relationship;
 import com.kaliszewski.datarelations.data.repository.RelationshipRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
@@ -15,6 +16,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,13 +35,13 @@ public class RelationshipRepositoryTests {
 
     @Autowired
     private RelationshipRepository relationshipRepository;
-    private String id;
+    private Relationship relationship;
 
     @BeforeEach
     public void setup() {
         relationshipRepository.deleteAll();
 
-        Relationship relationship = new Relationship();
+        relationship = new Relationship();
         relationship.setFromTaskId(1L);
         relationship.setType("TEST_TYPE");
         Node startNode = new Node();
@@ -51,14 +53,27 @@ public class RelationshipRepositoryTests {
         relationship.setStartNode(startNode);
         relationship.setEndNode(endNode);
 
-        id = relationshipRepository.save(relationship).getId();
+        relationship = relationshipRepository.save(relationship);
     }
 
     @Test
-    public void test() {
+    @DisplayName("Check is repository returns correct record count")
+    public void countTest() {
         List<Relationship> relationships = relationshipRepository.findAll();
-        assertThat(relationships).isNotNull();
-        assertThat(relationships.size()).isEqualTo(1);
+        assertThat(relationships)
+                .isNotNull()
+                .hasSize(1);
+    }
+
+    @Test
+    @DisplayName("Check is repository return correct records with correlated ID")
+    public void recordsReturnTest() {
+        Optional<Relationship> record = relationshipRepository.findById(relationship.getId());
+        assertThat(record)
+                .isNotNull()
+                .isPresent()
+                .get()
+                .isEqualTo(relationship);
     }
 
 }
