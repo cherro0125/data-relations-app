@@ -6,4 +6,5 @@ public class XmlElements {
     public static final String END_NODE_ELEMENT = "EndNode";
     public static final String NODE_ID_ELEMENT = "NodeID";
     public static final String NODE_TYPE_ELEMENT = "NodeIDType";
+    public static final String RELATIONSHIP_TYPE = "RelationshipType";
 }

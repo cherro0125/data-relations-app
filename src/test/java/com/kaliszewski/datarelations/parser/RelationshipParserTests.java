@@ -2,6 +2,7 @@ package com.kaliszewski.datarelations.parser;
 
 
 import com.kaliszewski.datarelations.data.model.reationship.Relationship;
+import com.kaliszewski.datarelations.data.parser.ParseResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,11 +38,13 @@ public class RelationshipParserTests {
     @Test
     @DisplayName("Check is parser correct parse XML file to Relationship object list")
     public void parserTest() {
-        List<Relationship> relationships = relationshipParser.parse(xmlFile);
-        assertThat(relationships).isNotNull();
-        assertThat(relationships.size()).isEqualTo(3);
-        assertThat(relationships).allMatch(r -> r.getStartNode() != null);
-        assertThat(relationships).allMatch(r -> r.getEndNode() != null);
+        ParseResult parseResult = relationshipParser.parse(xmlFile);
+        assertThat(parseResult).isNotNull();
+        assertThat(parseResult.getRelationships()).isNotNull();
+        assertThat(parseResult.getNodeCorrelations()).isNotNull();
+        assertThat(parseResult.getRelationships().size()).isEqualTo(3);
+        assertThat(parseResult.getRelationships()).allMatch(r -> r.getStartNode() != null);
+        assertThat(parseResult.getRelationships()).allMatch(r -> r.getEndNode() != null);
     }
 
 }

@@ -2,9 +2,12 @@ package com.kaliszewski.datarelations.parser;
 
 
 import com.kaliszewski.datarelations.data.model.reationship.Node;
+import com.kaliszewski.datarelations.data.model.reationship.NodeCorrelation;
 import com.kaliszewski.datarelations.data.model.reationship.Relationship;
+import com.kaliszewski.datarelations.data.parser.ParseResult;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -14,20 +17,18 @@ import javax.xml.stream.events.XMLEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Log4j2
 public class RelationshipParserImpl implements RelationshipParser {
 
-
     private final XMLInputFactory factory = XMLInputFactory.newInstance();
 
-
     @Override
-    public List<Relationship> parse(File file) {
+    public ParseResult parse(File file) {
         List<Relationship> relationships = new ArrayList<>();
+        Map<String, NodeCorrelation> correlationMap = new HashMap<>();
         try (final FileInputStream fileInputStream = new FileInputStream(file)) {
             final XMLEventReader reader = factory.createXMLEventReader(fileInputStream);
             while (reader.hasNext()) {
@@ -36,13 +37,31 @@ public class RelationshipParserImpl implements RelationshipParser {
                         .getLocalPart().equals(XmlElements.RELATIONSHIP_ELEMENT)) {
                     Relationship relationship = parseRelationship(reader);
                     relationships.add(relationship);
+                    String key = relationship.getStartNode().getId();
+                    String type = relationship.getType();
+                    String endNodeName = relationship.getEndNode().getId();
+                    if (correlationMap.containsKey(key)) {
+                        if(correlationMap.get(key).getCorrelatedNodes().containsKey(type)) {
+                            List<String> strings = correlationMap.get(key).getCorrelatedNodes().get(type);
+                            strings.add(endNodeName);
+                        } else {
+                            List<String> elements = new ArrayList<>(List.of(endNodeName));
+                            correlationMap.get(key).getCorrelatedNodes().put(type, elements);
+                        }
+                    } else {
+                        NodeCorrelation nodeCorrelation = new NodeCorrelation();
+                        nodeCorrelation.setNodeName(key);
+                        nodeCorrelation.getCorrelatedNodes().put(type, new ArrayList<>(List.of(endNodeName)));
+                        correlationMap.put(key, nodeCorrelation);
+                    }
                 }
             }
         } catch (IOException | XMLStreamException e) {
             log.error("Something get wrong with file getting.", e);
         }
-        return relationships;
+        return new ParseResult(new ArrayList<>(correlationMap.values()), relationships);
     }
+
 
     private Relationship parseRelationship(final XMLEventReader reader) throws XMLStreamException {
         Relationship relationship = new Relationship();
@@ -55,7 +74,7 @@ public class RelationshipParserImpl implements RelationshipParser {
                 final StartElement element = event.asStartElement();
                 final String elementName = element.getName().getLocalPart();
                 switch (elementName) {
-                    case XmlElements.NODE_TYPE_ELEMENT -> relationship.setType(reader.getElementText());
+                    case XmlElements.RELATIONSHIP_TYPE -> relationship.setType(reader.getElementText());
                     case XmlElements.START_NODE_ELEMENT -> relationship.setStartNode(parseNode(reader, XmlElements.START_NODE_ELEMENT));
                     case XmlElements.END_NODE_ELEMENT -> relationship.setEndNode(parseNode(reader, XmlElements.END_NODE_ELEMENT));
                 }
@@ -63,6 +82,7 @@ public class RelationshipParserImpl implements RelationshipParser {
         }
         return relationship;
     }
+
 
     private Node parseNode(final XMLEventReader reader, String elementName) throws XMLStreamException {
         Node node = new Node();
