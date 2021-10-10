@@ -5,17 +5,17 @@ import com.kaliszewski.datarelations.data.response.DataMessageResponse;
 import com.kaliszewski.datarelations.data.response.DataProcessingTaskInitResponse;
 import com.kaliszewski.datarelations.data.response.DataProcessingTaskResponse;
 import com.kaliszewski.datarelations.service.processing.ProcessingService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/processing")
 @Log4j2
+@OpenAPIDefinition
 @AllArgsConstructor
 public class DataProcessingController {
 
