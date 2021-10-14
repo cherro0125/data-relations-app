@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface NodeCorrelationStatisticService {
     List<NodeCorrelationStatistic> addStatistics(List<NodeCorrelationStatistic> statisticList);
+    List<NodeCorrelationStatistic> getStatisticsByTaskId(Long taskId);
+    List<NodeCorrelationStatistic> getStatisticsForLatestTask();
 }
