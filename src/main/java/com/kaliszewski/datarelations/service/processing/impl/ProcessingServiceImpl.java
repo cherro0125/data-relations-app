@@ -2,13 +2,14 @@ package com.kaliszewski.datarelations.service.processing.impl;
 
 import com.kaliszewski.datarelations.data.model.processing.DataProcessingTask;
 import com.kaliszewski.datarelations.data.model.processing.ProgressStatus;
-import com.kaliszewski.datarelations.data.model.reationship.NodeCorrelation;
+import com.kaliszewski.datarelations.data.model.reationship.NodeCorrelationStatistic;
 import com.kaliszewski.datarelations.data.model.reationship.Relationship;
 import com.kaliszewski.datarelations.data.parser.ParseResult;
 import com.kaliszewski.datarelations.data.repository.DataProcessingTaskRepository;
 import com.kaliszewski.datarelations.data.repository.NodeCorrelationRepository;
 import com.kaliszewski.datarelations.data.repository.RelationshipRepository;
 import com.kaliszewski.datarelations.parser.RelationshipParser;
+import com.kaliszewski.datarelations.service.correlation.NodeCorrelationStatisticService;
 import com.kaliszewski.datarelations.service.file.FileService;
 import com.kaliszewski.datarelations.service.processing.ProcessingService;
 import com.kaliszewski.datarelations.service.relationship.RelationshipService;
@@ -19,7 +20,9 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 @Service
@@ -34,6 +37,7 @@ public class ProcessingServiceImpl implements ProcessingService {
     private RelationshipRepository relationshipRepository;
     private RelationshipService relationshipService;
     private NodeCorrelationRepository nodeCorrelationRepository;
+    private NodeCorrelationStatisticService nodeCorrelationStatisticService;
 
     private void updateProcessingTaskStatus(DataProcessingTask task, ProgressStatus status) {
         task.setProgressStatus(status);
@@ -67,14 +71,15 @@ public class ProcessingServiceImpl implements ProcessingService {
     public void test() {
 //        Set<String> distinctNodeIdsByTaskId = relationshipService.getDistinctNodeIdsByTaskId(6L);
 //        log.info(distinctNodeIdsByTaskId.size());
-//        for (String nodeId : distinctNodeIdsByTaskId) {
+//       q for (String nodeId : distinctNodeIdsByTaskId) {
 //            List<Relationship> correlatedRecords = relationshipRepository.findAllByStartNode_IdAndFromTaskId(nodeId, 6L);
 //            log.info(correlatedRecords.size());
 //        }
 
-        ParseResult parseResult = relationshipParser.parse(Path.of("/Users/dominik/Downloads/20210930-gleif-concatenated-file-rr.xml").toFile());
-        log.info(parseResult.getRelationships().size());
-        log.info(parseResult.getNodeCorrelations().size());
+//        ParseResult parseResult = relationshipParser.parse(Path.of("/Users/dominik/Downloads/20210930-gleif-concatenated-file-rr.xml").toFile());
+//        log.info(parseResult.getRelationships().size());
+//        log.info(parseResult.getNodeCorrelations().size());
+        List<NodeCorrelationStatistic> statisticDataForCorrelationsByTaskId = nodeCorrelationRepository.getStatisticDataForCorrelationsByTaskId(2L);
     }
 
 
@@ -157,7 +162,7 @@ public class ProcessingServiceImpl implements ProcessingService {
     private Map<String, String> convertRelationshipsIntoMap(List<Relationship> relationships) {
         Map<String, String> resultMap = new HashMap<>();
         relationships.forEach(relationship -> {
-            resultMap.put(relationship.getType(),relationship.getEndNode().getId());
+            resultMap.put(relationship.getType(), relationship.getEndNode().getId());
         });
         return resultMap;
     }
@@ -165,6 +170,8 @@ public class ProcessingServiceImpl implements ProcessingService {
     private DataProcessingTask handleDataProcessingAction(DataProcessingTask task) {
         log.info("Start data processing actions for task ID: {}", task.getId());
         updateProcessingTaskStatus(task, ProgressStatus.DATA_PROCESSING_PENDING);
+        List<NodeCorrelationStatistic> stats = nodeCorrelationRepository.getStatisticDataForCorrelationsByTaskId(task.getId());
+        nodeCorrelationStatisticService.addStatistics(stats);
         log.info("End data processing actions for task ID: {}", task.getId());
         updateProcessingTaskStatus(task, ProgressStatus.DATA_PROCESSING_SUCCESS);
         return task;

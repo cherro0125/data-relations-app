@@ -6,9 +6,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Id;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -18,6 +17,6 @@ public class NodeCorrelation {
     @Id
     private String id;
     private String nodeName;
-    private Map<String, List<String>> correlatedNodes = new HashMap<>();
+    private List<NodeConnection> correlatedNodes = new ArrayList<>();
     private Long fromTaskId;
 }

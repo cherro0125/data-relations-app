@@ -2,12 +2,12 @@ package com.kaliszewski.datarelations.parser;
 
 
 import com.kaliszewski.datarelations.data.model.reationship.Node;
+import com.kaliszewski.datarelations.data.model.reationship.NodeConnection;
 import com.kaliszewski.datarelations.data.model.reationship.NodeCorrelation;
 import com.kaliszewski.datarelations.data.model.reationship.Relationship;
 import com.kaliszewski.datarelations.data.parser.ParseResult;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.IntStream;
 
 @Service
 @Log4j2
@@ -41,17 +42,25 @@ public class RelationshipParserImpl implements RelationshipParser {
                     String type = relationship.getType();
                     String endNodeName = relationship.getEndNode().getId();
                     if (correlationMap.containsKey(key)) {
-                        if(correlationMap.get(key).getCorrelatedNodes().containsKey(type)) {
-                            List<String> strings = correlationMap.get(key).getCorrelatedNodes().get(type);
-                            strings.add(endNodeName);
+                        OptionalInt indexOpt = IntStream.range(0, correlationMap.get(key).getCorrelatedNodes().size())
+                                .filter(i -> type.equals(correlationMap.get(key).getCorrelatedNodes().get(i).getType()))
+                                .findFirst();
+                        if(indexOpt.isPresent()) {
+                            correlationMap.get(key).getCorrelatedNodes().get(indexOpt.getAsInt()).getNodes().add(endNodeName);
                         } else {
-                            List<String> elements = new ArrayList<>(List.of(endNodeName));
-                            correlationMap.get(key).getCorrelatedNodes().put(type, elements);
+                            NodeConnection nodeConnection = new NodeConnection();
+                            nodeConnection.setType(type);
+                            nodeConnection.getNodes().add(endNodeName);
+                            correlationMap.get(key).getCorrelatedNodes().add(nodeConnection);
                         }
                     } else {
+                        NodeConnection nodeConnection = new NodeConnection();
+                        nodeConnection.setType(type);
+                        nodeConnection.getNodes().add(endNodeName);
+
                         NodeCorrelation nodeCorrelation = new NodeCorrelation();
                         nodeCorrelation.setNodeName(key);
-                        nodeCorrelation.getCorrelatedNodes().put(type, new ArrayList<>(List.of(endNodeName)));
+                        nodeCorrelation.getCorrelatedNodes().add(nodeConnection);
                         correlationMap.put(key, nodeCorrelation);
                     }
                 }
