@@ -2,10 +2,12 @@ package com.kaliszewski.datarelations.service.processing.impl;
 
 import com.kaliszewski.datarelations.data.model.processing.DataProcessingTask;
 import com.kaliszewski.datarelations.data.model.processing.ProgressStatus;
+import com.kaliszewski.datarelations.data.model.reationship.NodeCircularInformation;
 import com.kaliszewski.datarelations.data.model.reationship.NodeCorrelationStatistic;
 import com.kaliszewski.datarelations.data.model.reationship.Relationship;
 import com.kaliszewski.datarelations.data.parser.ParseResult;
 import com.kaliszewski.datarelations.data.repository.DataProcessingTaskRepository;
+import com.kaliszewski.datarelations.data.repository.NodeCircularInformationRepository;
 import com.kaliszewski.datarelations.data.repository.NodeCorrelationRepository;
 import com.kaliszewski.datarelations.data.repository.RelationshipRepository;
 import com.kaliszewski.datarelations.parser.RelationshipParser;
@@ -38,6 +40,7 @@ public class ProcessingServiceImpl implements ProcessingService {
     private RelationshipService relationshipService;
     private NodeCorrelationRepository nodeCorrelationRepository;
     private NodeCorrelationStatisticService nodeCorrelationStatisticService;
+    private NodeCircularInformationRepository nodeCircularInformationRepository;
 
     private void updateProcessingTaskStatus(DataProcessingTask task, ProgressStatus status) {
         task.setProgressStatus(status);
@@ -79,7 +82,9 @@ public class ProcessingServiceImpl implements ProcessingService {
 //        ParseResult parseResult = relationshipParser.parse(Path.of("/Users/dominik/Downloads/20210930-gleif-concatenated-file-rr.xml").toFile());
 //        log.info(parseResult.getRelationships().size());
 //        log.info(parseResult.getNodeCorrelations().size());
-        List<NodeCorrelationStatistic> statisticDataForCorrelationsByTaskId = nodeCorrelationRepository.getStatisticDataForCorrelationsByTaskId(2L);
+//        List<NodeCorrelationStatistic> statisticDataForCorrelationsByTaskId = nodeCorrelationRepository.getStatisticDataForCorrelationsByTaskId(2L);
+        List<NodeCircularInformation> circularDependencies = nodeCorrelationRepository.getCircularDependencies(7L);
+        log.info(circularDependencies.size());
     }
 
 
@@ -170,8 +175,14 @@ public class ProcessingServiceImpl implements ProcessingService {
     private DataProcessingTask handleDataProcessingAction(DataProcessingTask task) {
         log.info("Start data processing actions for task ID: {}", task.getId());
         updateProcessingTaskStatus(task, ProgressStatus.DATA_PROCESSING_PENDING);
+        log.info("Get and save stats start.");
         List<NodeCorrelationStatistic> stats = nodeCorrelationRepository.getStatisticDataForCorrelationsByTaskId(task.getId());
         nodeCorrelationStatisticService.addStatistics(stats);
+        log.info("Get and save stats end.");
+//        log.info("Get and save circular dependencies start.");
+//        List<NodeCircularInformation> circularDependencies = nodeCorrelationRepository.getCircularDependencies(task.getId());
+//        nodeCircularInformationRepository.saveAll(circularDependencies);
+//        log.info("Get and save circular dependencies end.");
         log.info("End data processing actions for task ID: {}", task.getId());
         updateProcessingTaskStatus(task, ProgressStatus.DATA_PROCESSING_SUCCESS);
         return task;

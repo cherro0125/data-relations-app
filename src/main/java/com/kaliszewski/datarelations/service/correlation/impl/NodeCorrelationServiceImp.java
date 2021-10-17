@@ -26,7 +26,7 @@ public class NodeCorrelationServiceImp implements NodeCorrelationService {
     @Override
     public List<NodeCorrelation> getAllByLatestTask() {
         Optional<DataProcessingTask> task = dataProcessingTaskRepository.findFirstByProgressStatusOrderByIdDesc(ProgressStatus.DATA_PROCESSING_SUCCESS);
-        if(task.isPresent()) {
+        if (task.isPresent()) {
             return nodeCorrelationRepository.findAllByFromTaskId(task.get().getId());
         } else {
             log.info("Any record with status DATA_PROCESSING_SUCCESS not found.");
@@ -37,8 +37,8 @@ public class NodeCorrelationServiceImp implements NodeCorrelationService {
     @Override
     public NodeCorrelation getByStartNodeForLatestTask(String nodeName) {
         Optional<DataProcessingTask> task = dataProcessingTaskRepository.findFirstByProgressStatusOrderByIdDesc(ProgressStatus.DATA_PROCESSING_SUCCESS);
-        if(task.isPresent()) {
-            return nodeCorrelationRepository.findByNodeNameAndFromTaskId(nodeName,task.get().getId()).orElseThrow(EntityNotFoundException::new);
+        if (task.isPresent()) {
+            return nodeCorrelationRepository.findByNodeNameAndFromTaskId(nodeName, task.get().getId()).orElseThrow(EntityNotFoundException::new);
         } else {
             log.info("Any record with status DATA_PROCESSING_SUCCESS not found.");
             return null;
@@ -64,4 +64,5 @@ public class NodeCorrelationServiceImp implements NodeCorrelationService {
     public NodeCorrelation getByTaskIdAndStarNodeName(String nodeName, Long taskId) {
         return nodeCorrelationRepository.findByNodeNameAndFromTaskId(nodeName, taskId).orElseThrow(EntityNotFoundException::new);
     }
+
 }

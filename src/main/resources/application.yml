@@ -42,11 +42,12 @@ spring:
             on-profile: docker
     data:
         mongodb:
-            database: data_relations
+            database: ${MONGO_DB_NAME}
             host: ${MONGO_CONTAINER_NAME}
             password: ${MONGO_PASSWORD}
             port: 27017
             username: ${MONGO_USER}
+            authentication-database: admin
     datasource:
         driver-class-name: org.postgresql.Driver
         url: jdbc:postgresql://${POSTGRE_CONTAINER_NAME}:5432/${POSTGRE_DB_NAME}
